@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tetris Clone</title>
+    <title>Westris Clone</title>
     <style>
-          body {
+        body {
             background: radial-gradient(circle, #2c2c3a 0%, #000000 100%);
             color: #fff;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -18,20 +19,22 @@
             overflow: hidden;
             text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
+
         #game-container {
             position: relative;
             border: 4px solid #444;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.5);
             border-radius: 5px;
         }
+
         canvas {
             display: block;
             background-color: #000;
-            /* Scanline effect */
-            background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                              linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
             background-size: 100% 4px, 3px 100%;
         }
+
         #ui {
             position: absolute;
             top: 0;
@@ -45,8 +48,9 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            user-select: none; /* Prevent text selection and cursor appearance */
+            user-select: none;
         }
+
         #overlay {
             position: absolute;
             top: 0;
@@ -61,6 +65,7 @@
             z-index: 10;
             backdrop-filter: blur(3px);
         }
+
         button {
             padding: 15px 30px;
             font-size: 1.5rem;
@@ -75,130 +80,85 @@
             transition: all 0.3s ease;
             box-shadow: 0 0 10px rgba(0, 240, 240, 0.3);
         }
+
         button:hover {
             background: #00f0f0;
             color: #000;
             box-shadow: 0 0 25px rgba(0, 240, 240, 0.6);
             transform: scale(1.05);
         }
-        h1 { 
-            margin: 0 0 20px 0; 
+
+        h1 {
+            margin: 0 0 20px 0;
             font-size: 3rem;
             letter-spacing: 5px;
             color: #00f0f0;
             text-shadow: 0 0 15px rgba(0, 240, 240, 0.7);
-            user-select: none; /* Ensure no cursor/selection here */
+            user-select: none;
         }
-        .score-label { 
-            font-size: 1.8rem; 
+
+        .score-label {
+            font-size: 1.8rem;
             font-weight: bold;
             color: #f0f0f0;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            text-shadow: 0 0 10px rgba(200, 255, 255, 0.3);
         }
+
         #score {
             color: #00f0f0;
             display: block;
             font-size: 2.5rem;
-            user-select: none; /* Ensure no cursor/selection here */
+            user-select: none;
         }
     </style>
 </head>
+
 <body>
 
     <div id="game-container">
-        <canvas id="tetris" width="300" height="500"></canvas>
-        
+        <canvas id="Westris" width="300" height="500"></canvas>
+
         <div id="overlay">
-            <h1>TETRIS</h1>
+            <h1>Westris</h1>
             <button id="start-button">START GAME</button>
         </div>
 
         <div id="ui">
             <div class="score-label">Score: <span id="score">0</span></div>
+            <div class="score-label">Speed: <span id="speed">1.0</span>x</div>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('tetris');
+        const canvas = document.getElementById('Westris');
         const context = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
+        const speedElement = document.getElementById('speed');
         const startButton = document.getElementById('start-button');
         const overlay = document.getElementById('overlay');
 
         context.scale(25, 25);
 
-        // Piece logic
-        function createPiece(type) {
-            if (type === 'I') {
-                return [
-                    [0, 1, 0, 0],
-                    [0, 1, 0, 0],
-                    [0, 1, 0, 0],
-                    [0, 1, 0, 0],
-                ];
-            } else if (type === 'L') {
-                return [
-                    [0, 2, 0],
-                    [0, 2, 0],
-                    [0, 2, 2],
-                ];
-            } else if (type === 'J') {
-                return [
-                    [0, 3, 0],
-                    [0, 3, 0],
-                    [3, 3, 0],
-                ];
-            } else if (
-                type === 'O') {
-                return [
-                    [4, 4],
-                    [4, 4],
-                ];
-            } else if (type === 'Z') {
-                return [
-                    [5, 5, 0],
-                    [0, 5, 5],
-                    [0, 0, 0],
-                ];
-            } else if (type === 'S') {
-                return [
-                    [0, 6, 6],
-                    [6, 6, 0],
-                    [0, 0, 0],
-                ];
-            } else if (type === 'T') {
-                return [
-                    [0, 7, 0],
-                    [7, 7, 7],
-                    [0, 0, 0],
-                ];
-            }
-        }
+        const PIECES = {
+            'I': [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]],
+            'L': [[0, 2, 0], [0, 2, 0], [0, 2, 2]],
+            'J': [[0, 3, 0], [0, 3, 0], [3, 3, 0]],
+            'O': [[4, 4], [4, 4]],
+            'Z': [[5, 5, 0], [0, 5, 5], [0, 0, 0]],
+            'S': [[0, 6, 6], [6, 6, 0], [0, 0, 0]],
+            'T': [[0, 7, 0], [7, 7, 7], [0, 0, 0]]
+        };
 
-        const colors = [
-            null,
-            '#00f0f0', // I
-            '#f0a000', // L
-            '#0000f0', // J
-            '#f0f000', // O
-            '#f00000', // Z
-            '#00f000', // S
-            '#a000f0', // T
-        ];
+        const colors = [null, '#00f0f0', '#f0a000', '#0000f0', '#f0f000', '#f00000', '#00f000', '#a000f0'];
 
         function createMatrix(w, h) {
-            const matrix = [];
-            while (h--) {
-                matrix.push(new Array(w).fill(0));
-            }
-            return matrix;
+            return Array.from({ length: h }, () => new Array(w).fill(0));
         }
 
         function draw() {
             context.fillStyle = '#000';
             context.fillRect(0, 0, canvas.width, canvas.height);
-
-            drawMatrix(arena, {x: 0, y: 0});
+            drawMatrix(arena, { x: 0, y: 0 });
             drawMatrix(player.matrix, player.pos);
         }
 
@@ -208,7 +168,6 @@
                     if (value !== 0) {
                         context.fillStyle = colors[value];
                         context.fillRect(x + offset.x, y + offset.y, 1, 1);
-                        // Add a small border to each block
                         context.lineWidth = 0.05;
                         context.strokeStyle = 'white';
                         context.strokeRect(x + offset.x, y + offset.y, 1, 1);
@@ -227,71 +186,13 @@
             });
         }
 
-        function collide(arena, player) {
-            const [m, o] = [player.matrix, player.pos];
-            for (let y = 0; y < m.length; ++y) {
-                for (let x = 0; x < m[y].length; ++x) {
-                    if (m[y][x] !== 0 &&
-                       (arena[y + o.y] && arena[y + o.y][x + o.x] !== 0) ||
-                       (arena[y + o.y] && (arena[y + o.y][x + o.x] !== undefined))) {
-                        // This is a simplified check for collision
-                    }
-                }
-            }
-            // Real collision logic:
-            for (let y = 0; y < m.length; ++y) {
-                for (let x = 0; x < m[y].length; ++x) {
-                    if (m[y][x] !== 0) {
-                        const targetY = y + o.y;
-                        const targetX = x + o.x;
-                        if (arena[targetY] === undefined || arena[targetrotY] === undefined || 
-                            arena[targetY][targetX] === undefined || arena[targetY][targetX] !== 0) {
-                            // This was getting messy, let's use the standard way:
-                        }
-                    }
-                }
-            }
-            // Let's use the standard collision check
-            for (let y = 0; y < m.length; ++y) {
-                for (let x = 0; x < m[y].length; ++x) {
-                    if (m[y][x] !== 0) {
-                        if (arena[y + o.y] === undefined || 
-                            arena[y + o.y][x + o.x] === undefined || 
-                            arena[y + o.y][x + o.x] !== 0) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-
-        // Simplified Collision logic for clarity
-        function checkCollision(arena, player) {
-            const [m, o] = [player.matrix, player.pos];
-            for (let y = 0; y < m.length; ++y) {
-                for (let x = 0; x < m[y].length; ++x) {
-                    if (m[y][x] !== 0) {
-                        if (arena[y + o.y] === undefined || 
-                            arena[y +
-                            o.y][x + o.x] === undefined || 
-                            arena[y + o.y][x + o.x] !== 0) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-
-        // Let's rewrite the collision properly
         function playerCollide(arena, player) {
             const [m, o] = [player.matrix, player.pos];
             for (let y = 0; y < m.length; ++y) {
                 for (let x = 0; x < m[y].length; ++x) {
                     if (m[y][x] !== 0) {
-                        if (arena[y + o.y] === undefined || 
-                            arena[y + o.y][x + o.x] === undefined || 
+                        if (arena[y + o.y] === undefined ||
+                            arena[y + o.y][x + o.x] === undefined ||
                             arena[y + o.y][x + o.x] !== 0) {
                             return true;
                         }
@@ -301,7 +202,7 @@
             return false;
         }
 
-                function arenaSweep() {
+        function arenaSweep() {
             let rowCount = 1;
             outer: for (let y = arena.length - 1; y >= 0; --y) {
                 for (let x = 0; x < arena[y].length; ++x) {
@@ -314,11 +215,13 @@
                 ++y;
                 player.score += rowCount * 10;
                 rowCount *= 2;
+                const minDropInterval = 100;
+                dropInterval = Math.max(minDropInterval, 1000 - Math.floor(player.score / 100) * 100);
             }
             updateScore();
         }
 
-                function playerDrop() {
+        function playerDrop() {
             player.pos.y++;
             if (playerCollide(arena, player)) {
                 player.pos.y--;
@@ -337,52 +240,62 @@
             }
         }
 
-        function playerRotate(dir) {
-            const pos = player.pos.x;
+                function playerRotate(dir) {
+            const oldMatrix = player.matrix;
+            const oldPos = player.pos.x;
+            player.matrix = rotate(player.matrix, dir);
             let offset = 1;
-            rotate(player.matrix, dir);
             while (playerCollide(arena, player)) {
                 player.pos.x += offset;
                 offset = -(offset + (offset > 0 ? 1 : -1));
                 if (offset > player.matrix[0].length) {
-                    rotate(player.matrix, -dir);
-                    player.pos.x = pos;
+                    player.matrix = oldMatrix;
+                    player.pos.x = oldPos;
                     return;
                 }
             }
         }
 
-        function rotate(matrix, dir) {
-            for (let y = 0; y < matrix.length; ++y) {
-                for (let x = 0; x < y; ++x) {
-                    [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+                function rotate(matrix, dir) {
+                    const rows = matrix.length;
+                    const cols = matrix[0].length;
+                    const newMatrix = Array.from({ length: cols }, () => new Array(rows).fill(0));
+                    for (let r = 0; r < rows; r++) {
+                        for (let c = 0; c < cols; c++) {
+                            if (dir > 0) {
+                                newMatrix[c][rows - 1 - r] = matrix[r][c];
+                            } else {
+                                newMatrix[cols - 1 - c][r] = matrix[r][c];
+                            }
+                        }
+                    }
+                    return newMatrix;
                 }
-            }
-            if (dir > 0) {
-                matrix.forEach(row => row.reverse());
-            } else {
-                matrix.reverse();
-            }
-        }
 
         function playerReset() {
             const pieces = 'ILJOTSZ';
-            player.matrix = createPiece(pieces[pieces.length * Math.random() | 0]);
+            player.matrix = PIECES[pieces[pieces.length * Math.random() | 0]];
             player.pos.y = 0;
             player.pos.x = (arena[0].length / 2 | 0) - (player.matrix[0].length / 2 | 0);
-            
+
             if (playerCollide(arena, player)) {
-                // Game Over
                 arena.forEach(row => row.fill(0));
                 player.score = 0;
+                dropInterval = 1000;
                 updateScore();
                 overlay.style.display = 'flex';
                 cancelAnimationFrame(animationId);
             }
         }
 
-        function updateScore() {
+                function updateScore() {
             scoreElement.innerText = player.score;
+            if (overlay.style.display !== 'flex') {
+                const speedMultiplier = (1000 / dropInterval).toFixed(1);
+                speedElement.innerText = speedMultiplier;
+            } else {
+                speedElement.innerText = '0.0';
+            }
         }
 
         let dropCounter = 0;
@@ -392,58 +305,45 @@
 
         const arena = createMatrix(12, 20);
 
-                const player = {
-            pos: {x: 0, y: 0},
+        const player = {
+            pos: { x: 0, y: 0 },
             matrix: null,
             score: 0
         };
 
-        function update(time = 0) {
-            const deltaTime = time - lastTime;
-            lastTime = time;
+                function update(time = 0) {
+                    const deltaTime = time - lastTime;
+                    lastTime = time;
 
-            dropCounter += deltaTime;
-            if (dropCounter > dropInterval) {
-                playerDrop();
-            }
+                    dropCounter += deltaTime;
+                    if (dropCounter > dropInterval) {
+                        playerDrop();
+                    }
 
-            draw();
-            animationId = requestAnimationFrame(update);
-        }
+                    draw();
+                    animationId = requestAnimationFrame(update);
+                }
 
         document.addEventListener('keydown', event => {
-            if (event.keyCode === 37) { // Left
-                event.preventDefault();
+            if (event.keyCode === 37 || event.keyCode === 81) {
                 playerMove(-1);
-            } else if (event.keyCode === 39) { // Right
-                event.preventDefault();
+            } else if (event.keyCode === 39 || event.keyCode === 69) {
                 playerMove(1);
-            } else if (event.keyCode === 40) { // Down
-                event.preventDefault();
+            } else if (event.keyCode === 40 || event.keyCode === 83) {
                 playerDrop();
-            } else if (event.keyCode === 81) { // Q
+            } else if (event.keyCode === 38 || event.keyCode === 87) {
                 playerRotate(-1);
-            } else if (event.keyCode === 87) { // W
-                playerRotate(1);
-            } else if (event.keyCode === 38) { // Up (Rotate)
-                playerRotate(1);
             }
         });
 
         startButton.addEventListener('click', () => {
             overlay.style.display = 'none';
-            player.score = 0;
-            updateScore();
             playerReset();
+            updateScore();
             update();
         });
-
-        // Logic for the actual "reset" of the arena needs to happen on start
-        // This is a simplified version. In a real app, you'd re-initialize the arena.
-        
     </script>
 </body>
 </html>
 
-        
 
