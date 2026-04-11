@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Westris</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
 
@@ -71,7 +73,7 @@
         }
 
         .ui-hidden {
-            visibility: hidden;
+            display: none;
         }
 
         .ui-label {
@@ -90,11 +92,21 @@
             background: rgba(0, 0, 0, 0.5);
         }
 
+        #score-box {
+            background: rgba(0, 240, 240, 0.05);
+            border: 1px solid rgba(0, 240, 240, 0.18);
+            border-radius: 8px;
+            padding: 8px 18px;
+            min-width: 80px;
+            text-align: center;
+        }
+
         #score {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(0, 240, 240, 0.4);
+            font-family: 'Orbitron', 'Segoe UI', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #00f0f0;
+            text-shadow: 0 0 10px rgba(0, 240, 240, 0.5);
             user-select: none;
         }
 
@@ -115,6 +127,7 @@
             left: 0;
             width: 100%;
             height: 100%;
+            padding: 0 16px;
             background: rgba(0, 0, 0, 0.88);
             display: flex;
             flex-direction: column;
@@ -125,68 +138,296 @@
             backdrop-filter: blur(4px);
         }
 
+        @keyframes titlePulse {
+            0%, 100% { text-shadow: 0 0 20px rgba(0, 240, 240, 0.6), 0 0 40px rgba(0, 240, 240, 0.2); }
+            50%       { text-shadow: 0 0 30px rgba(0, 240, 240, 0.9), 0 0 60px rgba(0, 240, 240, 0.4), 0 0 80px rgba(0, 240, 240, 0.15); }
+        }
+
         h1 {
             margin: 0;
-            font-size: 2.8rem;
-            letter-spacing: 6px;
+            font-family: 'Orbitron', 'Segoe UI', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 8px;
             color: #00f0f0;
-            text-shadow: 0 0 20px rgba(0, 240, 240, 0.6);
+            animation: titlePulse 3s ease-in-out infinite;
             user-select: none;
+        }
+
+        .overlay-subtitle {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: rgba(0, 240, 240, 0.45);
+            margin-top: -16px;
         }
 
         .difficulty-group {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .difficulty-group label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             letter-spacing: 3px;
             text-transform: uppercase;
-            color: #00f0f0;
-            text-shadow: 0 0 6px rgba(0, 240, 240, 0.6);
+            color: rgba(0, 240, 240, 0.6);
         }
 
-        #difficulty-select {
-            font-size: 1rem;
-            font-family: inherit;
-            font-weight: 600;
+        .difficulty-pills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .difficulty-pills input[type="radio"] {
+            display: none;
+        }
+
+        .difficulty-pills label {
+            font-size: 0.7rem;
+            font-weight: 700;
             letter-spacing: 1px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #00f0f0;
-            border: 1px solid rgba(0, 240, 240, 0.5);
-            padding: 7px 20px;
+            text-transform: uppercase;
+            color: rgba(0, 240, 240, 0.55);
+            border: 1px solid rgba(0, 240, 240, 0.25);
             border-radius: 20px;
-            outline: none;
+            padding: 6px 14px;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 240, 240, 0.2);
-            text-align: center;
+            transition: all 0.2s ease;
+            background: transparent;
+        }
+
+        .difficulty-pills input[type="radio"]:checked + label {
+            color: #000;
+            background: #00f0f0;
+            border-color: #00f0f0;
+            box-shadow: 0 0 14px rgba(0, 240, 240, 0.5);
+        }
+
+        .difficulty-pills label:hover {
+            color: #00f0f0;
+            border-color: rgba(0, 240, 240, 0.6);
         }
 
         button {
-            padding: 12px 32px;
-            font-size: 1rem;
-            font-family: inherit;
+            padding: 13px 36px;
+            font-size: 0.85rem;
+            font-family: 'Orbitron', 'Segoe UI', sans-serif;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             background: transparent;
             color: #00f0f0;
             border: 2px solid #00f0f0;
             border-radius: 50px;
             cursor: pointer;
             transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
-            box-shadow: 0 0 12px rgba(0, 240, 240, 0.25);
+            box-shadow: 0 0 12px rgba(0, 240, 240, 0.2), inset 0 0 0px rgba(0, 240, 240, 0);
         }
 
         button:hover {
             background: #00f0f0;
             color: #000;
-            box-shadow: 0 0 28px rgba(0, 240, 240, 0.55);
-            transform: scale(1.04);
+            box-shadow: 0 0 28px rgba(0, 240, 240, 0.6), 0 0 60px rgba(0, 240, 240, 0.2), inset 0 0 20px rgba(255,255,255,0.15);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* ── Overlay gap ──────────────────────────────────── */
+        #overlay { gap: 14px; }
+
+        /* ── Game over banner ─────────────────────────────── */
+        #gameover-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .gameover-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: #ff4455;
+            text-shadow: 0 0 12px rgba(255, 68, 85, 0.7);
+            margin: 0;
+        }
+
+        .gameover-score-label {
+            font-size: 0.55rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(0, 240, 240, 0.4);
+            margin: 4px 0 0;
+        }
+
+        .gameover-final-score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 12px rgba(0, 240, 240, 0.4);
+            margin: 0;
+        }
+
+        /* ── High score table ─────────────────────────────── */
+        .highscore-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .highscore-table {
+            width: 88%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .highscore-table td {
+            padding: 4px 3px;
+            border-bottom: 1px solid rgba(0, 240, 240, 0.07);
+        }
+
+        .highscore-table tr:last-child td { border-bottom: none; }
+
+        .hs-rank {
+            width: 18px;
+            text-align: center;
+            color: rgba(0, 240, 240, 0.45);
+            font-weight: 700;
+        }
+
+        .hs-name {
+            text-align: left;
+            padding-left: 8px !important;
+            color: rgba(255, 255, 255, 0.85);
+            max-width: 130px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .hs-score {
+            text-align: right;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            color: #00f0f0;
+        }
+
+        .hs-empty {
+            text-align: center;
+            color: rgba(0, 240, 240, 0.25);
+            font-style: italic;
+            padding: 10px 0;
+            font-size: 0.7rem;
+            font-family: inherit;
+        }
+
+        .hs-new td { background: rgba(0, 240, 240, 0.06); }
+        .hs-new .hs-rank,
+        .hs-new .hs-name { color: #00f0f0; }
+
+        /* ── Name entry modal ─────────────────────────────── */
+        #name-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.82);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            backdrop-filter: blur(6px);
+        }
+
+        #name-modal.hidden { display: none; }
+
+        .name-modal-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 28px 22px;
+            width: 230px;
+            border: 1px solid rgba(0, 240, 240, 0.3);
+            border-radius: 14px;
+            background: rgba(0, 8, 8, 0.97);
+            box-shadow: 0 0 50px rgba(0, 240, 240, 0.12);
+        }
+
+        .name-modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #00f0f0;
+            text-shadow: 0 0 10px rgba(0, 240, 240, 0.6);
+            margin: 0;
+        }
+
+        .name-modal-score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 240, 240, 0.3);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .name-modal-hint {
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(0, 240, 240, 0.45);
+            margin: 0;
+        }
+
+        #name-input {
+            width: 100%;
+            font-family: 'Orbitron', 'Segoe UI', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-align: center;
+            text-transform: uppercase;
+            background: rgba(0, 240, 240, 0.05);
+            border: 1px solid rgba(0, 240, 240, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            padding: 9px 12px;
+            outline: none;
+        }
+
+        #name-input::placeholder {
+            color: rgba(0, 240, 240, 0.2);
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: none;
+        }
+
+        #name-input:focus {
+            border-color: rgba(0, 240, 240, 0.65);
+            box-shadow: 0 0 14px rgba(0, 240, 240, 0.18);
+        }
+
+        .name-modal-box button {
+            width: 100%;
+            padding: 10px 0;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
         }
     </style>
 </head>
@@ -198,16 +439,47 @@
 
         <div id="overlay">
             <h1>Westris</h1>
-            <div class="difficulty-group">
-                <label for="difficulty-select">Difficulty</label>
-                <select id="difficulty-select">
-                    <option value="1000">Easy</option>
-                    <option value="700">Normal</option>
-                    <option value="400">Hard</option>
-                    <option value="200">Insane</option>
-                </select>
+            <p class="overlay-subtitle">Block Puzzle</p>
+
+            <div id="gameover-section">
+                <p class="gameover-title">Game Over</p>
+                <p class="gameover-score-label">Score</p>
+                <p class="gameover-final-score" id="gameover-score-value">0</p>
             </div>
+
+            <div class="difficulty-group">
+                <label>Difficulty</label>
+                <div class="difficulty-pills">
+                    <input type="radio" name="difficulty" id="diff-easy" value="1000">
+                    <label for="diff-easy">Easy</label>
+                    <input type="radio" name="difficulty" id="diff-normal" value="700" checked>
+                    <label for="diff-normal">Normal</label>
+                    <input type="radio" name="difficulty" id="diff-hard" value="400">
+                    <label for="diff-hard">Hard</label>
+                    <input type="radio" name="difficulty" id="diff-insane" value="200">
+                    <label for="diff-insane">Insane</label>
+                </div>
+            </div>
+
+            <div class="highscore-section">
+                <span class="ui-label">High Scores</span>
+                <table class="highscore-table">
+                    <tbody id="highscore-body"></tbody>
+                </table>
+            </div>
+
             <button id="start-button">Start Game</button>
+        </div>
+
+        <div id="name-modal" class="hidden">
+            <div class="name-modal-box">
+                <p class="name-modal-title">New High Score!</p>
+                <p class="name-modal-score" id="modal-score">0</p>
+                <p class="name-modal-hint">Enter your name</p>
+                <input type="text" id="name-input" maxlength="12" placeholder="Your name"
+                    autocomplete="off" spellcheck="false">
+                <button id="name-submit">Save Score</button>
+            </div>
         </div>
 
         <div id="ui">
@@ -217,7 +489,7 @@
             </div>
             <div id="ui-score" class="ui-section ui-hidden">
                 <span class="ui-label">Score</span>
-                <span id="score">0</span>
+                <div id="score-box"><span id="score">0</span></div>
             </div>
             <div class="ui-section">
                 <span class="ui-label">Speed</span>
@@ -431,14 +703,16 @@
             drawNextPiece();
 
             if (playerCollide(arena, player)) {
+                const finalScore = player.score;
+                const playedInterval = initialDropInterval;
                 arena.forEach(row => row.fill(0));
                 player.score = 0;
                 dropInterval = initialDropInterval;
                 nextPiece = null;
                 drawNextPiece();
                 updateScore();
-                overlay.style.display = 'flex';
                 cancelAnimationFrame(animationId);
+                showGameOver(finalScore, playedInterval);
             }
         }
 
@@ -504,29 +778,130 @@
             }
         });
 
+        // ── High score storage ─────────────────────────────────────────
+        const HS_KEY = 'westris_scores';
+        const HS_MAX = 5;
+        const INTERVAL_TO_KEY = { 1000: 'easy', 700: 'normal', 400: 'hard', 200: 'insane' };
+
+        function loadScores() {
+            try {
+                const data = JSON.parse(localStorage.getItem(HS_KEY));
+                return data && typeof data === 'object' ? data : {};
+            } catch { return {}; }
+        }
+
+        function saveScores(scores) {
+            localStorage.setItem(HS_KEY, JSON.stringify(scores));
+        }
+
+        function diffKey(interval) {
+            return INTERVAL_TO_KEY[interval] || 'normal';
+        }
+
+        function qualifies(score, interval) {
+            if (score <= 0) return false;
+            const list = (loadScores()[diffKey(interval)]) || [];
+            return list.length < HS_MAX || score > list[list.length - 1].score;
+        }
+
+        function insertScore(name, score, interval) {
+            const scores = loadScores();
+            const key = diffKey(interval);
+            const list = scores[key] || [];
+            list.push({ name: name.trim().slice(0, 12) || 'Anonymous', score });
+            list.sort((a, b) => b.score - a.score);
+            scores[key] = list.slice(0, HS_MAX);
+            saveScores(scores);
+            return scores[key].findIndex(e => e.name === (name.trim().slice(0, 12) || 'Anonymous') && e.score === score);
+        }
+
+        function safeHtml(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function renderHighScores(interval, highlightIndex = -1) {
+            const key = diffKey(interval);
+            const list = (loadScores()[key]) || [];
+            const tbody = document.getElementById('highscore-body');
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="hs-empty">No scores yet — be the first!</td></tr>';
+                return;
+            }
+            tbody.innerHTML = list.map((e, i) =>
+                `<tr class="${i === highlightIndex ? 'hs-new' : ''}">
+                    <td class="hs-rank">${i + 1}</td>
+                    <td class="hs-name">${safeHtml(e.name)}</td>
+                    <td class="hs-score">${e.score.toLocaleString()}</td>
+                </tr>`
+            ).join('');
+        }
+
+        // ── Game over flow ─────────────────────────────────────────────
+        function showGameOver(score, interval) {
+            document.getElementById('gameover-score-value').textContent = score.toLocaleString();
+            document.getElementById('gameover-section').style.display = 'flex';
+            startButton.textContent = 'Play Again';
+
+            // Sync difficulty pill to the difficulty that was just played
+            const radio = document.querySelector(`input[name="difficulty"][value="${interval}"]`);
+            if (radio) radio.checked = true;
+            setGauge(interval);
+
+            if (qualifies(score, interval)) {
+                document.getElementById('modal-score').textContent = score.toLocaleString();
+                const modal = document.getElementById('name-modal');
+                const input = document.getElementById('name-input');
+                modal.classList.remove('hidden');
+                input.value = '';
+                setTimeout(() => input.focus(), 50);
+
+                function submitName() {
+                    const name = input.value.trim() || 'Anonymous';
+                    const idx = insertScore(name, score, interval);
+                    modal.classList.add('hidden');
+                    renderHighScores(interval, idx);
+                    overlay.style.display = 'flex';
+                }
+
+                document.getElementById('name-submit').onclick = submitName;
+                input.onkeydown = e => { if (e.key === 'Enter') submitName(); };
+            } else {
+                renderHighScores(interval);
+                overlay.style.display = 'flex';
+            }
+        }
+
+        // ── Difficulty / start wiring ──────────────────────────────────
+        function getSelectedDifficulty() {
+            const checked = document.querySelector('input[name="difficulty"]:checked');
+            return checked ? parseInt(checked.value) : 700;
+        }
+
         startButton.addEventListener('click', () => {
-            const difficultySelect = document.getElementById('difficulty-select');
-            initialDropInterval = parseInt(difficultySelect.value);
+            initialDropInterval = getSelectedDifficulty();
             dropInterval = initialDropInterval;
+            document.getElementById('gameover-section').style.display = 'none';
+            startButton.textContent = 'Start Game';
             overlay.style.display = 'none';
             document.getElementById('ui-next').classList.remove('ui-hidden');
             document.getElementById('ui-score').classList.remove('ui-hidden');
             playerReset();
             updateScore();
             update();
-            // Ensure speedometer updates after overlay is hidden
             setTimeout(updateScore, 10);
         });
 
-        const difficultySelect = document.getElementById('difficulty-select');
-        if (difficultySelect) {
-            difficultySelect.addEventListener('change', () => {
-                const newInterval = parseInt(difficultySelect.value);
-                initialDropInterval = newInterval;
-
-                setGauge(newInterval);
+        document.querySelectorAll('input[name="difficulty"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                const val = parseInt(radio.value);
+                setGauge(val);
+                renderHighScores(val);
             });
-        }
+        });
+
+        // Initialise gauge and high score table on load
+        setGauge(getSelectedDifficulty());
+        renderHighScores(getSelectedDifficulty());
     </script>
 </body>
 
