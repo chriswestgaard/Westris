@@ -4,114 +4,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Westris Clone</title>
+    <title>Westris</title>
     <style>
+        * { box-sizing: border-box; }
+
         body {
             background: radial-gradient(circle, #2c2c3a 0%, #000000 100%);
             color: #fff;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
             user-select: none;
             -webkit-user-select: none;
-            outline: none;
         }
 
         #game-container {
             position: relative;
-            border: 4px solid #444;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.5);
-            border-radius: 5px;
+            border: 2px solid rgba(0, 240, 240, 0.3);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
+            border-radius: 6px;
         }
 
-        canvas {
+        #game-canvas {
             display: block;
             background-color: #000;
-            background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+            background-image:
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
                 linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
             background-size: 100% 4px, 3px 100%;
         }
 
+        /* ── Side panel ───────────────────────────────────── */
         #ui {
             position: absolute;
             top: 0;
             left: 100%;
-            padding-left: 30px;
-            min-width: 150px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(5px);
-            border-radius: 0 10px 10px 0;
+            width: 160px;
             height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border-left: 1px solid rgba(0, 240, 240, 0.15);
+            border-radius: 0 6px 6px 0;
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-content: center;
+            gap: 4px;
             user-select: none;
         }
 
+        .ui-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(0, 240, 240, 0.1);
+        }
+
+        .ui-section:last-child {
+            border-bottom: none;
+        }
+
+        .ui-hidden {
+            visibility: hidden;
+        }
+
+        .ui-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #00f0f0;
+            text-shadow: 0 0 6px rgba(0, 240, 240, 0.6);
+            margin-bottom: 10px;
+        }
+
+        #next-canvas {
+            border: 1px solid rgba(0, 240, 240, 0.2);
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        #score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 240, 240, 0.4);
+            user-select: none;
+        }
+
+        #speedometer-container {
+            width: 124px;
+        }
+
+        #speedometer-container svg {
+            width: 100%;
+            height: auto;
+            overflow: visible;
+        }
+
+        /* ── Overlay ──────────────────────────────────────── */
         #overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.88);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 24px;
             z-index: 10;
-            backdrop-filter: blur(3px);
+            backdrop-filter: blur(4px);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            letter-spacing: 6px;
+            color: #00f0f0;
+            text-shadow: 0 0 20px rgba(0, 240, 240, 0.6);
+            user-select: none;
+        }
+
+        .difficulty-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .difficulty-group label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #00f0f0;
+            text-shadow: 0 0 6px rgba(0, 240, 240, 0.6);
+        }
+
+        #difficulty-select {
+            font-size: 1rem;
+            font-family: inherit;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00f0f0;
+            border: 1px solid rgba(0, 240, 240, 0.5);
+            padding: 7px 20px;
+            border-radius: 20px;
+            outline: none;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 240, 240, 0.2);
+            text-align: center;
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 1.5rem;
-            font-weight: bold;
+            padding: 12px 32px;
+            font-size: 1rem;
+            font-family: inherit;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             background: transparent;
             color: #00f0f0;
             border: 2px solid #00f0f0;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(0, 240, 240, 0.3);
+            transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
+            box-shadow: 0 0 12px rgba(0, 240, 240, 0.25);
         }
 
         button:hover {
             background: #00f0f0;
             color: #000;
-            box-shadow: 0 0 25px rgba(0, 240, 240, 0.6);
-            transform: scale(1.05);
-        }
-
-        h1 {
-            margin: 0 0 20px 0;
-            font-size: 3rem;
-            letter-spacing: 5px;
-            color: #00f0f0;
-            text-shadow: 0 0 15px rgba(0, 240, 240, 0.7);
-            user-select: none;
-        }
-
-        .score-label {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #f0f0f0;
-            text-shadow: 0 0 10px rgba(200, 255, 255, 0.3);
-        }
-
-        #score {
-            color: #00f0f0;
-            display: block;
-            font-size: 2.5rem;
-            user-select: none;
+            box-shadow: 0 0 28px rgba(0, 240, 240, 0.55);
+            transform: scale(1.04);
         }
     </style>
 </head>
@@ -119,52 +194,66 @@
 <body>
 
     <div id="game-container">
-        <canvas id="Westris" width="300" height="500"></canvas>
+        <canvas id="game-canvas" width="300" height="500"></canvas>
 
         <div id="overlay">
-            <br>
-            <h1 style="margin: 0 0 20px 0;">Westris</h1>
-            <div style="margin-bottom: 20px;">
-                <div style="margin-bottom: 10px; text-align: center;">
-                    <label for="difficulty-select"
-                        style="font-size: 1.2rem; color: #00f0f0; text-shadow: 0 0 5px #00f0f0; display: block; margin-bottom: 5px;">DIFFICULTY</label>
-                    <select id="difficulty-select"
-                        style="font-size: 1.2rem; background: rgba(0, 0, 0, 0.7); color: #00f0f0; border: 1px solid #00f0f0; padding: 5px 15px; border-radius: 20px; outline: none; cursor: pointer; box-shadow: 0 0 10px rgba(0, 240, 240, 0.3); font-family: inherit;">
-                        <option value="1000">EASY</option>
-                        <option value="700">NORMAL</option>
-                        <option value="400">HARD</option>
-                        <option value="200">INSANE</option>
-                    </select>
-                </div>
+            <h1>Westris</h1>
+            <div class="difficulty-group">
+                <label for="difficulty-select">Difficulty</label>
+                <select id="difficulty-select">
+                    <option value="1000">Easy</option>
+                    <option value="700">Normal</option>
+                    <option value="400">Hard</option>
+                    <option value="200">Insane</option>
+                </select>
             </div>
-            <button id="start-button">START GAME</button>
+            <button id="start-button">Start Game</button>
         </div>
 
         <div id="ui">
-            <div class="score-label">Score: <span id="score">0</span></div>
-            <div id="speedometer-container" style="width: 150px; height: 150px; position: relative;">
-                <svg viewBox="0 0 100 100" style="transform: rotate(-90deg); width: 100%; height: 100%;">
-                    <!-- Background Track -->
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(0, 240, 240, 0.1)" stroke-width="8" />
-                    <!-- Progress Track -->
-                    <circle id="speed-track" cx="50" cy="50" r="40" fill="none" stroke="#00f0f0" stroke-width="8"
-                        stroke-dasharray="251.2" stroke-dashoffset="251.2"
-                        style="transition: stroke-dashoffset 0.3s ease; filter: drop-shadow(0 0 5px #00f0f0);" />
-                </svg>
-                <div
-                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                    <div style="font-size: 0.7rem; color: #00f0f0; text-shadow: 0 0 5px #00f0f0;">SPEED</div>
-                    <div id="speed-value" style="font-size: 1.2rem; font-weight: bold; color: #fff;">1.0</div>
+            <div id="ui-next" class="ui-section ui-hidden">
+                <span class="ui-label">Next</span>
+                <canvas id="next-canvas" width="80" height="80"></canvas>
+            </div>
+            <div id="ui-score" class="ui-section ui-hidden">
+                <span class="ui-label">Score</span>
+                <span id="score">0</span>
+            </div>
+            <div class="ui-section">
+                <span class="ui-label">Speed</span>
+                <div id="speedometer-container">
+                    <!-- 270° gauge: center(50,46) r=36, from 135° to 45° clockwise, arc length=169.6 -->
+                    <svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+                        <!-- background track -->
+                        <path d="M 24.5 71.5 A 36 36 0 1 1 75.5 71.5"
+                            fill="none" stroke="rgba(0,240,240,0.12)" stroke-width="7" stroke-linecap="round"/>
+                        <!-- progress arc -->
+                        <path id="speed-track"
+                            d="M 24.5 71.5 A 36 36 0 1 1 75.5 71.5"
+                            fill="none" stroke="#00f0f0" stroke-width="7" stroke-linecap="round"
+                            stroke-dasharray="169.6" stroke-dashoffset="169.6"
+                            style="transition: stroke-dashoffset 0.35s ease; filter: drop-shadow(0 0 4px #00f0f0);"/>
+                        <!-- speed value -->
+                        <text id="speed-value" x="50" y="50" text-anchor="middle" dominant-baseline="middle"
+                            fill="#ffffff" font-size="13" font-weight="bold"
+                            font-family="'Segoe UI',Roboto,Helvetica,Arial,sans-serif">1.0x</text>
+                        <!-- min / max labels -->
+                        <text x="19" y="79" text-anchor="middle"
+                            fill="rgba(0,240,240,0.45)" font-size="7"
+                            font-family="'Segoe UI',Roboto,Helvetica,Arial,sans-serif">1x</text>
+                        <text x="81" y="79" text-anchor="middle"
+                            fill="rgba(0,240,240,0.45)" font-size="7"
+                            font-family="'Segoe UI',Roboto,Helvetica,Arial,sans-serif">6x</text>
+                    </svg>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('Westris');
+        const canvas = document.getElementById('game-canvas');
         const context = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
-        const speedElement = document.getElementById('speed');
         const startButton = document.getElementById('start-button');
         const overlay = document.getElementById('overlay');
 
@@ -235,6 +324,7 @@
 
         function arenaSweep() {
             let rowCount = 1;
+            let clearedRows = 0;
             outer: for (let y = arena.length - 1; y >= 0; --y) {
                 for (let x = 0; x < arena[y].length; ++x) {
                     if (arena[y][x] === 0) {
@@ -246,6 +336,10 @@
                 ++y;
                 player.score += rowCount * 10;
                 rowCount *= 2;
+                clearedRows++;
+            }
+            if (clearedRows > 0) {
+                dropInterval = Math.max(initialDropInterval * 0.1, dropInterval - clearedRows * 30);
             }
             updateScore();
         }
@@ -301,49 +395,79 @@
             return newMatrix;
         }
 
+        const nextCanvas = document.getElementById('next-canvas');
+        const nextContext = nextCanvas.getContext('2d');
+        let nextPiece = null;
+
+        function drawNextPiece() {
+            const cellSize = 20;
+            nextContext.fillStyle = '#000';
+            nextContext.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+            if (!nextPiece) return;
+            const offsetX = Math.floor((nextCanvas.width - nextPiece[0].length * cellSize) / 2);
+            const offsetY = Math.floor((nextCanvas.height - nextPiece.length * cellSize) / 2);
+            nextPiece.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value !== 0) {
+                        nextContext.fillStyle = colors[value];
+                        nextContext.fillRect(x * cellSize + offsetX, y * cellSize + offsetY, cellSize, cellSize);
+                        nextContext.lineWidth = 1;
+                        nextContext.strokeStyle = 'white';
+                        nextContext.strokeRect(x * cellSize + offsetX, y * cellSize + offsetY, cellSize, cellSize);
+                    }
+                });
+            });
+        }
+
         function playerReset() {
             const pieces = 'ILJOTSZ';
-            player.matrix = PIECES[pieces[pieces.length * Math.random() | 0]];
+            if (nextPiece === null) {
+                nextPiece = PIECES[pieces[pieces.length * Math.random() | 0]];
+            }
+            player.matrix = nextPiece;
+            nextPiece = PIECES[pieces[pieces.length * Math.random() | 0]];
             player.pos.y = 0;
             player.pos.x = (arena[0].length / 2 | 0) - (player.matrix[0].length / 2 | 0);
+            drawNextPiece();
 
             if (playerCollide(arena, player)) {
                 arena.forEach(row => row.fill(0));
                 player.score = 0;
-                dropInterval = 1000;
+                dropInterval = initialDropInterval;
+                nextPiece = null;
+                drawNextPiece();
                 updateScore();
                 overlay.style.display = 'flex';
                 cancelAnimationFrame(animationId);
             }
         }
 
-        function updateScore() {
-            scoreElement.innerText = player.score;
+        // Absolute gauge scale: 1000ms (Easy start) = 0%, 20ms (Insane max) = 100%
+        const GAUGE_MAX_MS = 1000;
+        const GAUGE_MIN_MS = 20;
+        const GAUGE_ARC = 169.6;
+
+        function gaugeProgress(interval) {
+            return Math.min(Math.max((GAUGE_MAX_MS - interval) / (GAUGE_MAX_MS - GAUGE_MIN_MS), 0), 1);
+        }
+
+        function setGauge(interval) {
             const speedValueElement = document.getElementById('speed-value');
             const speedTrack = document.getElementById('speed-track');
+            if (speedValueElement)
+                speedValueElement.textContent = (GAUGE_MAX_MS / interval).toFixed(1) + 'x';
+            if (speedTrack)
+                speedTrack.style.strokeDashoffset = GAUGE_ARC * (1 - gaugeProgress(interval));
+        }
 
-            if (overlay.style.display !== 'flex') {
-                const speedMultiplier = (initialDropInterval / dropInterval).toFixed(1);
-                if (speedValueElement) speedValueElement.innerText = speedMultiplier;
-
-                if (speedTrack) {
-                    // Calculate dashoffset: circumference is ~251.2 for r=40
-                    // We want 1.0x to be a small part and high speed to be full
-                    // Let's map 1.0x - 10.0x to 0% - 100%
-                    const maxSpeed = 10.0;
-                    const progress = Math.min(speedMultiplier / maxSpeed, 1);
-                    const circumference = 251.2;
-                    const offset = circumference * (1 - progress);
-                    speedTrack.style.strokeDashoffset = offset;
-                }
-            } else {
-                if (speedValueElement) speedValue.innerText = '0.0';
-                if (speedTrack) speedTrack.style.strokeDashoffset = '251.2';
-            }
+        function updateScore() {
+            scoreElement.innerText = player.score;
+            setGauge(dropInterval);
         }
 
         let dropCounter = 0;
         let dropInterval = 1000;
+        let initialDropInterval = 1000; 
         let lastTime = 0;
         let animationId;
 
@@ -385,6 +509,8 @@
             initialDropInterval = parseInt(difficultySelect.value);
             dropInterval = initialDropInterval;
             overlay.style.display = 'none';
+            document.getElementById('ui-next').classList.remove('ui-hidden');
+            document.getElementById('ui-score').classList.remove('ui-hidden');
             playerReset();
             updateScore();
             update();
@@ -398,19 +524,7 @@
                 const newInterval = parseInt(difficultySelect.value);
                 initialDropInterval = newInterval;
 
-                const speedValueElement = document.getElementById('speed-value');
-                const speedTrack = document.getElementById('speed-track');
-                if (speedValueElement) {
-                    const previewMultiplier = (1000 / newInterval).toFixed(1);
-                    speedValueElement.innerText = previewMultiplier;
-                }
-                if (speedTrack) {
-                    const maxSpeed = 10.0;
-                    const progress = Math.min((1000 / newInterval) / maxSpeed, 1);
-                    const circumference = 251.2;
-                    const offset = circumference * (1 - progress);
-                    speedTrack.style.strokeDashoffset = offset;
-                }
+                setGauge(newInterval);
             });
         }
     </script>
