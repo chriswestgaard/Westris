@@ -35,7 +35,7 @@
             display: flex;
             flex-direction: row;
             align-items: stretch;
-            transform-origin: center center;
+            transform-origin: top center;
         }
 
         #game-container {
@@ -1110,6 +1110,8 @@
                 (window.innerHeight - padding - controlsH) / BASE_H
             );
             gameWrapper.style.transform = `scale(${scale})`;
+            // Collapse the unused layout space left by transform: scale()
+            gameWrapper.style.marginBottom = ((scale - 1) * BASE_H) + 'px';
         }
 
         window.addEventListener('resize', scaleGame);
