@@ -24,11 +24,18 @@
             -webkit-user-select: none;
         }
 
+        #game-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            transform-origin: center center;
+        }
+
         #game-container {
             position: relative;
             border: 2px solid rgba(0, 240, 240, 0.3);
             box-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
-            border-radius: 6px;
+            border-radius: 6px 0 0 6px;
         }
 
         #game-canvas {
@@ -42,15 +49,13 @@
 
         /* ── Side panel ───────────────────────────────────── */
         #ui {
-            position: absolute;
-            top: 0;
-            left: 100%;
             width: 160px;
-            height: 100%;
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(8px);
+            border: 2px solid rgba(0, 240, 240, 0.3);
             border-left: 1px solid rgba(0, 240, 240, 0.15);
             border-radius: 0 6px 6px 0;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -458,6 +463,7 @@
 
 <body>
 
+    <div id="game-wrapper">
     <div id="game-container">
         <canvas id="game-canvas" width="300" height="500"></canvas>
 
@@ -506,7 +512,8 @@
             </div>
         </div>
 
-        <div id="ui">
+    </div>
+    <div id="ui">
             <div id="ui-next" class="ui-section ui-hidden">
                 <span class="ui-label">Next</span>
                 <canvas id="next-canvas" width="80" height="80"></canvas>
@@ -547,6 +554,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <script>
@@ -874,7 +882,7 @@
             } else if (event.keyCode === 40 || event.keyCode === 83) {
                 playerDrop();
             } else if (event.keyCode === 38 || event.keyCode === 87) {
-                playerRotate(-1);
+                playerRotate(1);
             }
         });
 
@@ -1005,6 +1013,23 @@
         // Initialise gauge and high score table on load
         setGauge(getSelectedDifficulty());
         renderHighScores(getSelectedDifficulty());
+
+        // ── Responsive scaling ─────────────────────────────────────────
+        const gameWrapper = document.getElementById('game-wrapper');
+        const BASE_W = 300 + 160; // canvas + side panel
+        const BASE_H = 500;
+
+        function scaleGame() {
+            const padding = 32;
+            const scale = Math.min(
+                (window.innerWidth  - padding) / BASE_W,
+                (window.innerHeight - padding) / BASE_H
+            );
+            gameWrapper.style.transform = `scale(${scale})`;
+        }
+
+        window.addEventListener('resize', scaleGame);
+        scaleGame();
     </script>
 </body>
 
