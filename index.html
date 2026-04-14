@@ -14,6 +14,13 @@
     <link rel="apple-touch-icon" href="icon-192.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script async src="https://plausible.io/js/pa-wzyDJh9Xt0-vSkXlohYcX.js"></script>
+    <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+    </script>
+
     <style>
         * { box-sizing: border-box; }
 
@@ -701,13 +708,7 @@
         </div>
     </div>
 
-    <script async src="https://plausible.io/js/pa-wzyDJh9Xt0-vSkXlohYcX.js">
-
-        <!-- Privacy-friendly analytics by Plausible -->
-        window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-        plausible.init()
-
-
+    <script>
         const canvas = document.getElementById('game-canvas');
         const context = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
