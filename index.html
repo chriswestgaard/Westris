@@ -684,13 +684,9 @@
 
     <div id="touch-controls">
         <div class="tc-row">
-            <div class="tc-placeholder"></div>
-            <button class="tc-btn" id="tc-rotate">↻</button>
-            <div class="tc-placeholder"></div>
-        </div>
-        <div class="tc-row">
             <button class="tc-btn" id="tc-left">◄</button>
             <button class="tc-btn" id="tc-drop">▼</button>
+            <button class="tc-btn" id="tc-rotate">↻</button>
             <button class="tc-btn" id="tc-right">►</button>
         </div>
     </div>
@@ -1162,7 +1158,7 @@
 
         function scaleGame() {
             const padding = 32;
-            const controlsH = isTouchDevice ? 152 : 0;
+            const controlsH = isTouchDevice ? 90 : 0;
             const effectiveW = isTouchDevice ? 300 : BASE_W;
             const effectiveH = isTouchDevice ? 580 : BASE_H; // 500 canvas + 80 top bar
             const scale = Math.min(
