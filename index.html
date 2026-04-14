@@ -471,22 +471,20 @@
             display: none;
         }
 
-        @media (hover: none) and (pointer: coarse) {
-            #touch-controls {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 8px;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 12px 20px 24px;
-                background: rgba(0, 0, 0, 0.6);
-                backdrop-filter: blur(8px);
-                border-top: 1px solid rgba(0, 240, 240, 0.12);
-                z-index: 50;
-            }
+        body.touch-device #touch-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 20px 24px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(0, 240, 240, 0.12);
+            z-index: 50;
         }
 
         .tc-row {
@@ -1096,7 +1094,8 @@
         const gameWrapper = document.getElementById('game-wrapper');
         const BASE_W = 300 + 160; // canvas + side panel
         const BASE_H = 500;
-        const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        if (isTouchDevice) document.body.classList.add('touch-device');
 
         function scaleGame() {
             const padding = 32;
