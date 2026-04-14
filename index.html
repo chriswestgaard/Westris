@@ -788,7 +788,7 @@
                 clearedRows++;
             }
             if (clearedRows > 0) {
-                dropInterval = Math.max(initialDropInterval * 0.1, dropInterval - clearedRows * 30);
+                dropInterval = Math.max(initialDropInterval * 0.3, dropInterval - clearedRows * 30);
                 GameAudio.clear(clearedRows);
             }
             updateScore();
@@ -900,9 +900,9 @@
             }
         }
 
-        // Absolute gauge scale: 1000ms (Easy start) = 0%, 20ms (Insane max) = 100%
+        // Absolute gauge scale: 1000ms (Easy start) = 0%, 60ms (Insane max) = 100%
         const GAUGE_MAX_MS = 1000;
-        const GAUGE_MIN_MS = 20;
+        const GAUGE_MIN_MS = 60;
         const GAUGE_ARC = 169.6;
 
         function gaugeProgress(interval) {
