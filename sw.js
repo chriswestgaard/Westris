@@ -1,4 +1,4 @@
-const CACHE = 'westris-v1';
+const CACHE = 'westris-v2';
 const ASSETS = [
     './index.html',
     './manifest.json',
