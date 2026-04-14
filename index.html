@@ -482,7 +482,7 @@
 
         body.touch-device #ui {
             width: 300px;
-            height: 60px;
+            height: 80px;
             flex-direction: row;
             justify-content: space-around;
             align-items: center;
@@ -490,7 +490,7 @@
             border: 2px solid rgba(0, 240, 240, 0.3);
             border-bottom: 1px solid rgba(0, 240, 240, 0.15);
             box-shadow: none;
-            padding: 0 8px;
+            padding: 0 4px;
             gap: 0;
         }
 
@@ -499,13 +499,13 @@
         }
 
         body.touch-device .ui-section {
-            flex-direction: row;
+            flex-direction: column;
             width: auto;
             flex: 1;
-            padding: 0 8px;
+            padding: 4px 6px;
             border-bottom: none;
             border-right: 1px solid rgba(0, 240, 240, 0.1);
-            gap: 8px;
+            gap: 2px;
             align-items: center;
             justify-content: center;
         }
@@ -514,12 +514,19 @@
             border-right: none;
         }
 
-        body.touch-device .ui-label           { display: none; }
-        body.touch-device #speedometer-container { display: none; }
+        body.touch-device .ui-label {
+            font-size: 0.55rem;
+            letter-spacing: 2px;
+            margin-bottom: 0;
+        }
+
+        body.touch-device #speedometer-container {
+            width: 58px;
+        }
 
         body.touch-device #next-canvas {
-            width: 44px !important;
-            height: 44px !important;
+            width: 36px !important;
+            height: 36px !important;
         }
 
         body.touch-device #score {
@@ -550,9 +557,9 @@
         }
 
         .tc-btn {
-            width: 68px;
-            height: 68px;
-            font-size: 1.6rem;
+            width: 54px;
+            height: 54px;
+            font-size: 1.3rem;
             background: rgba(0, 240, 240, 0.07);
             border: 1px solid rgba(0, 240, 240, 0.3);
             border-radius: 14px;
@@ -573,8 +580,8 @@
         }
 
         .tc-placeholder {
-            width: 68px;
-            height: 68px;
+            width: 54px;
+            height: 54px;
         }
     </style>
 </head>
@@ -1155,9 +1162,9 @@
 
         function scaleGame() {
             const padding = 32;
-            const controlsH = isTouchDevice ? 180 : 0;
+            const controlsH = isTouchDevice ? 152 : 0;
             const effectiveW = isTouchDevice ? 300 : BASE_W;
-            const effectiveH = isTouchDevice ? 560 : BASE_H; // 500 canvas + 60 top bar
+            const effectiveH = isTouchDevice ? 580 : BASE_H; // 500 canvas + 80 top bar
             const scale = Math.min(
                 (window.innerWidth  - padding) / effectiveW,
                 (window.innerHeight - padding - controlsH) / effectiveH
