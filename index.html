@@ -628,7 +628,7 @@
     <div id="touch-controls">
         <div class="tc-row">
             <div class="tc-placeholder"></div>
-            <button class="tc-btn" id="tc-rotate">↺</button>
+            <button class="tc-btn" id="tc-rotate">↻</button>
             <div class="tc-placeholder"></div>
         </div>
         <div class="tc-row">
@@ -1099,7 +1099,8 @@
         const gameWrapper = document.getElementById('game-wrapper');
         const BASE_W = 300 + 160; // canvas + side panel
         const BASE_H = 500;
-        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        const isTouchDevice = (navigator.maxTouchPoints > 0) &&
+            window.matchMedia('(pointer: coarse)').matches;
         if (isTouchDevice) document.body.classList.add('touch-device');
 
         function scaleGame() {
