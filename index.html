@@ -476,6 +476,56 @@
             padding-top: 12px;
         }
 
+        body.touch-device #game-wrapper {
+            flex-direction: column;
+        }
+
+        body.touch-device #ui {
+            width: 300px;
+            height: 60px;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            border-radius: 6px 6px 0 0;
+            border: 2px solid rgba(0, 240, 240, 0.3);
+            border-bottom: 1px solid rgba(0, 240, 240, 0.15);
+            box-shadow: none;
+            padding: 0 8px;
+            gap: 0;
+        }
+
+        body.touch-device #game-container {
+            border-radius: 0 0 6px 6px;
+        }
+
+        body.touch-device .ui-section {
+            flex-direction: row;
+            width: auto;
+            flex: 1;
+            padding: 0 8px;
+            border-bottom: none;
+            border-right: 1px solid rgba(0, 240, 240, 0.1);
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.touch-device .ui-section:last-child {
+            border-right: none;
+        }
+
+        body.touch-device .ui-label           { display: none; }
+        body.touch-device #speedometer-container { display: none; }
+
+        body.touch-device #next-canvas {
+            width: 44px !important;
+            height: 44px !important;
+        }
+
+        body.touch-device #score {
+            font-size: 1.1rem;
+        }
+
         body.touch-device #touch-controls {
             display: flex;
             flex-direction: column;
@@ -1106,13 +1156,15 @@
         function scaleGame() {
             const padding = 32;
             const controlsH = isTouchDevice ? 180 : 0;
+            const effectiveW = isTouchDevice ? 300 : BASE_W;
+            const effectiveH = isTouchDevice ? 560 : BASE_H; // 500 canvas + 60 top bar
             const scale = Math.min(
-                (window.innerWidth  - padding) / BASE_W,
-                (window.innerHeight - padding - controlsH) / BASE_H
+                (window.innerWidth  - padding) / effectiveW,
+                (window.innerHeight - padding - controlsH) / effectiveH
             );
             gameWrapper.style.transform = `scale(${scale})`;
             // Collapse the unused layout space left by transform: scale()
-            gameWrapper.style.marginBottom = ((scale - 1) * BASE_H) + 'px';
+            gameWrapper.style.marginBottom = ((scale - 1) * effectiveH) + 'px';
         }
 
         window.addEventListener('resize', scaleGame);
