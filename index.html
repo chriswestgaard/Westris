@@ -1031,6 +1031,10 @@
         });
 
         // ── High score storage ─────────────────────────────────────────
+        // ── Supabase config ────────────────────────────────────────────
+        const SUPABASE_URL = 'https://tyotapfflueaqqixzeow.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_b0Mo-bHPgddyX8IsR9yAIQ_vjlC83Z7';
+
         const HS_KEY = 'westris_scores';
         const HS_MAX = 5;
         const INTERVAL_TO_KEY = { 1000: 'easy', 700: 'normal', 400: 'hard', 200: 'insane' };
@@ -1048,6 +1052,39 @@
 
         function diffKey(interval) {
             return INTERVAL_TO_KEY[interval] || 'normal';
+        }
+
+        async function fetchScores(interval) {
+            try {
+                const res = await fetch(
+                    `${SUPABASE_URL}/rest/v1/scores?difficulty=eq.${diffKey(interval)}&order=score.desc&limit=${HS_MAX}`,
+                    { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
+                );
+                if (!res.ok) throw new Error();
+                return await res.json();
+            } catch {
+                return (loadScores()[diffKey(interval)]) || [];
+            }
+        }
+
+        async function postScore(name, score, interval) {
+            insertScore(name, score, interval); // save locally as cache
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/scores`, {
+                    method: 'POST',
+                    headers: {
+                        apikey: SUPABASE_ANON_KEY,
+                        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        Prefer: 'return=minimal'
+                    },
+                    body: JSON.stringify({
+                        name: name.trim().slice(0, 12) || 'Anonymous',
+                        score,
+                        difficulty: diffKey(interval)
+                    })
+                });
+            } catch { /* offline — score saved locally only */ }
         }
 
         function qualifies(score, interval) {
@@ -1071,56 +1108,66 @@
             return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
-        function renderHighScores(interval, highlightIndex = -1) {
-            const key = diffKey(interval);
-            const list = (loadScores()[key]) || [];
+        function renderHighScores(list, highlightName = null, highlightScore = null) {
             const tbody = document.getElementById('highscore-body');
+            if (!list) {
+                tbody.innerHTML = '<tr><td colspan="3" class="hs-empty">Loading…</td></tr>';
+                return;
+            }
             if (list.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="3" class="hs-empty">No scores yet — be the first!</td></tr>';
                 return;
             }
-            tbody.innerHTML = list.map((e, i) =>
-                `<tr class="${i === highlightIndex ? 'hs-new' : ''}">
+            tbody.innerHTML = list.map((e, i) => {
+                const isNew = e.name === highlightName && e.score === highlightScore;
+                return `<tr class="${isNew ? 'hs-new' : ''}">
                     <td class="hs-rank">${i + 1}</td>
                     <td class="hs-name">${safeHtml(e.name)}</td>
                     <td class="hs-score">${e.score.toLocaleString()}</td>
-                </tr>`
-            ).join('');
+                </tr>`;
+            }).join('');
         }
 
         // ── Game over flow ─────────────────────────────────────────────
-        function showGameOver(score, interval) {
+        async function showGameOver(score, interval) {
             document.getElementById('gameover-score-value').textContent = score.toLocaleString();
             document.getElementById('gameover-section').style.display = 'flex';
             startButton.textContent = 'Play Again';
 
-            // Sync difficulty pill to the difficulty that was just played
             const radio = document.querySelector(`input[name="difficulty"][value="${interval}"]`);
             if (radio) radio.checked = true;
             setGauge(interval);
 
-            if (qualifies(score, interval)) {
+            renderHighScores(null);
+            overlay.style.display = 'flex';
+            const globalList = await fetchScores(interval);
+
+            const qualifiesGlobal = score > 0 &&
+                (globalList.length < HS_MAX || score > globalList[globalList.length - 1].score);
+
+            if (qualifiesGlobal) {
                 GameAudio.highScore();
                 document.getElementById('modal-score').textContent = score.toLocaleString();
                 const modal = document.getElementById('name-modal');
                 const input = document.getElementById('name-input');
+                renderHighScores(globalList);
                 modal.classList.remove('hidden');
                 input.value = '';
                 setTimeout(() => input.focus(), 50);
 
-                function submitName() {
+                async function submitName() {
                     const name = input.value.trim() || 'Anonymous';
-                    const idx = insertScore(name, score, interval);
                     modal.classList.add('hidden');
-                    renderHighScores(interval, idx);
-                    overlay.style.display = 'flex';
+                    renderHighScores(null);
+                    await postScore(name, score, interval);
+                    const updated = await fetchScores(interval);
+                    renderHighScores(updated, name, score);
                 }
 
                 document.getElementById('name-submit').onclick = submitName;
                 input.onkeydown = e => { if (e.key === 'Enter') submitName(); };
             } else {
-                renderHighScores(interval);
-                overlay.style.display = 'flex';
+                renderHighScores(globalList);
             }
         }
 
@@ -1147,16 +1194,18 @@
         });
 
         document.querySelectorAll('input[name="difficulty"]').forEach(radio => {
-            radio.addEventListener('change', () => {
+            radio.addEventListener('change', async () => {
                 const val = parseInt(radio.value);
                 setGauge(val);
-                renderHighScores(val);
+                renderHighScores(null);
+                renderHighScores(await fetchScores(val));
             });
         });
 
         // Initialise gauge and high score table on load
         setGauge(getSelectedDifficulty());
-        renderHighScores(getSelectedDifficulty());
+        renderHighScores(null);
+        (async () => renderHighScores(await fetchScores(getSelectedDifficulty())))();
 
         // ── Responsive scaling ─────────────────────────────────────────
         const gameWrapper = document.getElementById('game-wrapper');
